@@ -13,9 +13,12 @@ dependencies = [
     "rich",
     "groq",
     "nltk",
-    "python-dotenv"
+    "python-dotenv",
+    "tree-sitter",
+    "tree-sitter-python",
+    "tree-sitter-javascript"
 ]
-requires-python = ">=3.10"
+requires-python = ">=3.9"
 
 [project.scripts]
 sisyphus-install = "sisyphus_git.installer:main"

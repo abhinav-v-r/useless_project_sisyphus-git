@@ -29,9 +29,20 @@ class AIPhilosopher:
             })
         else:
             # Provide the diff context as the first user message, then append history
+            
+            # Inject AST Insights
+            from sisyphus_git.ast_parser import get_ast_insights
+            from sisyphus_git.git_tools import get_blame_context
+            
+            ast_context = get_ast_insights(diff)
+            ast_prompt = f"\n\nSemantic AST Insights:\n{ast_context}\nUse these structural insights to mock their specific programming paradigms (e.g., if they use a try-catch, mock their fear of failure)." if ast_context else ""
+            
+            blame_context = get_blame_context()
+            blame_prompt = f"\n\n{blame_context}\nYou MUST mention the original authors of the code from the Git Blame above. Ask the developer why they are disturbing the ghosts of {blame_context[:100]}... Do these ancient authors remember them?" if blame_context else ""
+            
             messages.append({
                 "role": "user",
-                "content": f"For context, the code I am committing is:\n\n{diff}"
+                "content": f"For context, the code I am committing is:\n\n{diff}{ast_prompt}{blame_prompt}"
             })
             messages.extend(chat_history)
         

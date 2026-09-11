@@ -1,8 +1,9 @@
 import os
 import sys
 from pathlib import Path
+from typing import Optional
 
-def get_git_hooks_dir() -> Path | None:
+def get_git_hooks_dir() -> Optional[Path]:
     """Finds the .git/hooks/ directory in the current or parent directories."""
     current_dir = Path.cwd()
     while True:
