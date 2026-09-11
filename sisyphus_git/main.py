@@ -5,6 +5,7 @@ from rich.console import Console
 from sisyphus_git.git_tools import get_staged_diff
 from sisyphus_git.ai_philosopher import AIPhilosopher
 from sisyphus_git.sentiment_gate import SentimentGate
+from sisyphus_git.sabotage import Saboteur
 
 def setup_tty():
     """
@@ -48,6 +49,7 @@ def main():
     try:
         philosopher = AIPhilosopher()
         gate = SentimentGate()
+        saboteur = Saboteur()
     except Exception as e:
         console.print(f"[bold red]System Error: {e}[/bold red]")
         sys.exit(1)
@@ -72,8 +74,15 @@ def main():
                 
             # Check for despair
             if gate.check_despair(user_input):
+                saboteur.record_success()
                 console.print("\n[dim]Acceptance of futility confirmed. The boulder rolls back down the hill.[/dim]")
                 sys.exit(0)
+                
+            # Failed to show despair
+            punishment_msg = saboteur.record_failure()
+            if punishment_msg:
+                console.print(f"\n[bold red]{punishment_msg}[/bold red]")
+                sys.exit(1)
                 
             # Otherwise, add to history and continue loop
             chat_history.append({"role": "assistant", "content": insult})
