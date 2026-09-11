@@ -1,7 +1,12 @@
 import re
-from tree_sitter import Language, Parser
-import tree_sitter_python
-import tree_sitter_javascript
+
+try:
+    from tree_sitter import Language, Parser
+    import tree_sitter_python
+    import tree_sitter_javascript
+    TREE_SITTER_AVAILABLE = True
+except ImportError:
+    TREE_SITTER_AVAILABLE = False
 
 def extract_added_code_from_diff(diff: str) -> str:
     """Extracts only the added lines from a unified diff, stripping the '+' prefix."""
@@ -16,6 +21,9 @@ def get_ast_insights(diff: str) -> str:
     Parses the added code using Tree-sitter and returns a summary of the AST nodes.
     Tree-sitter is resilient so it can parse partial snippets from diffs.
     """
+    if not TREE_SITTER_AVAILABLE:
+        return ""
+
     added_code = extract_added_code_from_diff(diff)
     if not added_code.strip():
         return ""
