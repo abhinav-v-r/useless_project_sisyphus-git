@@ -1,4 +1,5 @@
 import sys
+import os
 import time
 from rich.console import Console
 
@@ -92,7 +93,9 @@ def main():
                     
                     console.print(f"[dim]Uploading despair for {username}...[/dim]")
                     
-                    requests.post("http://localhost:8000/score", json={
+                    # Read backend URL from env (set SISYPHUS_BACKEND_URL in .env for production)
+                    backend_url = os.environ.get("SISYPHUS_BACKEND_URL", "http://localhost:8000")
+                    requests.post(f"{backend_url}/score", json={
                         "username": username,
                         "despair_score": score,
                         "commit_message": user_input

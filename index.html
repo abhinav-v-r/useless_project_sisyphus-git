@@ -520,7 +520,7 @@
 
         async function fetchLeaderboard() {
             try {
-                const response = await fetch('http://localhost:8000/leaderboard', { cache: 'no-store' });
+                const response = await fetch('/leaderboard', { cache: 'no-store' });
                 if (!response.ok) throw new Error('Network response was not ok');
                 const data = await response.json();
                 renderLeaderboard(data);
@@ -581,3 +581,4 @@
 </body>
 
 </html>
+
