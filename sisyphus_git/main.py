@@ -72,11 +72,11 @@ def main():
             if not user_input:
                 continue
                 
-            # Check for despair
-            is_despair, score = gate.check_despair(user_input)
-            if is_despair:
+            # Check if the user explained their change scientifically / mathematically
+            passes_gate, score = gate.check_despair(user_input)
+            if passes_gate:
                 saboteur.record_success()
-                console.print("\n[dim]Acceptance of futility confirmed. The boulder rolls back down the hill.[/dim]")
+                console.print("\n[dim]Scientific justification accepted. The boulder may roll... for now.[/dim]")
                 
                 # POST to leaderboard
                 try:
@@ -90,14 +90,11 @@ def main():
                     )
                     username = user_name_proc.stdout.strip() or "Anonymous Sisyphus"
                     
-                    # Despair score is the negative sentiment (higher = more despair)
-                    despair_score = abs(score)
-                    
                     console.print(f"[dim]Uploading despair for {username}...[/dim]")
                     
                     requests.post("http://localhost:8000/score", json={
                         "username": username,
-                        "despair_score": despair_score,
+                        "despair_score": score,
                         "commit_message": user_input
                     }, timeout=2)
                     
@@ -105,8 +102,9 @@ def main():
                     console.print(f"[dim]Failed to reach the Global Leaderboard of Despair. Your misery remains local. ({e})[/dim]")
                 
                 sys.exit(0)
-                
-            # Failed to show despair
+            
+            # Failed the science gate — mock the user and continue the loop
+            console.print("\n[bold red]Sisyphus scoffs: That was not science. That was poetry at best. Explain yourself MATHEMATICALLY.[/bold red]")
             punishment_msg = saboteur.record_failure()
             if punishment_msg:
                 console.print(f"\n[bold red]{punishment_msg}[/bold red]")

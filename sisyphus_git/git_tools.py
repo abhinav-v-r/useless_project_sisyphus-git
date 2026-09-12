@@ -8,11 +8,13 @@ def get_staged_diff() -> Optional[str]:
     Returns None if there is no diff, or a truncated string (max 1000 chars) to save tokens.
     """
     try:
-        # Run git diff --cached
+        # Run git diff --cached, forcing UTF-8 to avoid charmap errors on Windows
         result = subprocess.run(
             ["git", "diff", "--cached"],
             capture_output=True,
             text=True,
+            encoding="utf-8",
+            errors="replace",
             check=True
         )
         
@@ -27,10 +29,8 @@ def get_staged_diff() -> Optional[str]:
             
         return diff
     except subprocess.CalledProcessError:
-        # If the git command fails (e.g., not in a git repository), return None
         return None
     except FileNotFoundError:
-        # Git is not installed
         return None
 
 def get_blame_context() -> str:
@@ -39,7 +39,14 @@ def get_blame_context() -> str:
     to extract authors and timestamps of the surrounding legacy code.
     """
     try:
-        diff_output = subprocess.run(["git", "diff", "--cached"], capture_output=True, text=True, check=True).stdout
+        diff_output = subprocess.run(
+            ["git", "diff", "--cached"],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            check=True
+        ).stdout
         if not diff_output:
             return ""
         
@@ -60,7 +67,11 @@ def get_blame_context() -> str:
                     try:
                         blame_result = subprocess.run(
                             ["git", "blame", "-L", f"{blame_start},{blame_end}", "HEAD", "--", current_file],
-                            capture_output=True, text=True, check=True
+                            capture_output=True,
+                            text=True,
+                            encoding="utf-8",
+                            errors="replace",
+                            check=True
                         )
                         blames = blame_result.stdout.strip()
                         if blames:

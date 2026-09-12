@@ -1,74 +1,90 @@
 import re
-import nltk
-from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
-# Ensure vader_lexicon is downloaded silently
-try:
-    nltk.data.find('sentiment/vader_lexicon.zip')
-except LookupError:
-    nltk.download('vader_lexicon', quiet=True)
+# ---------------------------------------------------------------------------
+# Math / Science keyword lists
+# ---------------------------------------------------------------------------
 
-# Words that indicate submission, begging, and humility — Sisyphus accepts these
-SUBMISSION_WORDS = {
-    "please", "sorry", "apologize", "apologies", "forgive", "beg", "begging",
-    "mercy", "helpless", "hopeless", "meaningless", "futile", "pointless",
-    "surrender", "give up", "worthless", "useless", "broken", "defeated",
-    "exhausted", "tired", "lost", "desperate", "pathetic", "humble",
-    "forgive me", "i give up", "it's hopeless", "i'm sorry", "please let me",
-    "i beg", "have mercy", "accept my", "i accept", "i understand", "indeed",
-    "you're right", "you are right", "no point", "no purpose"
+MATH_KEYWORDS = {
+    # Core math vocabulary
+    "algorithm", "function", "variable", "constant", "derivative", "integral",
+    "matrix", "vector", "tensor", "scalar", "eigenvalue", "eigenvector",
+    "polynomial", "equation", "inequality", "identity", "theorem", "proof",
+    "lemma", "corollary", "axiom", "topology", "geometry", "algebra",
+    "calculus", "differential", "gradient", "divergence", "curl", "laplacian",
+    "fourier", "laplace", "transform", "series", "sequence", "convergence",
+    "recursion", "iteration", "permutation", "combination", "probability",
+    "distribution", "variance", "standard deviation", "mean", "median", "mode",
+    "logarithm", "exponential", "modular", "prime", "factorial", "fibonacci",
+    "binary", "hexadecimal", "boolean", "bitwise", "complexity", "asymptotic",
+    "hypothesis", "inference", "regression", "optimization", "convex",
+    "stochastic", "markov", "entropy", "information theory",
+
+    # Science vocabulary
+    "hypothesis", "empirical", "experiment", "observation", "data", "analysis",
+    "synthesis", "catalyst", "reaction", "molecule", "atom", "nucleus",
+    "electron", "proton", "neutron", "quantum", "photon", "energy", "mass",
+    "momentum", "velocity", "acceleration", "force", "torque", "entropy",
+    "enthalpy", "thermodynamics", "electromagnetic", "frequency", "wavelength",
+    "amplitude", "resonance", "oscillation", "gravity", "relativity",
+    "spacetime", "singularity", "wavefunction", "superposition", "coherence",
+    "mitosis", "meiosis", "dna", "rna", "protein", "enzyme", "genome",
+    "evolution", "natural selection", "mutation", "gene", "allele",
+    "ecosystem", "metabolism", "photosynthesis", "cellular", "neural",
+    "neuron", "synapse", "cortex", "cognitive", "simulation", "model",
+    "parameter", "coefficient", "magnitude", "perpendicular", "parallel",
+    "tangential", "radial", "logarithmic", "exponential",
+
+    # Programming / CS terms (still scientific)
+    "recursion", "complexity", "heuristic", "deterministic", "stochastic",
+    "binary tree", "hash", "polynomial", "abstraction", "encapsulation",
 }
 
-# Aggressive words — Sisyphus REJECTS these no matter how negative they score
-AGGRESSION_WORDS = {
-    "idiot", "stupid", "dumb", "shut up", "hate", "screw", "damn", "hell",
-    "wtf", "what the f", "bullshit", "bs", "crap", "sucks", "terrible",
-    "worst", "garbage", "trash", "awful", "ridiculous", "absurd",
-    "nonsense", "pathetic tool", "you suck", "this sucks", "fu",
-    "f you", "f this", "jerk", "moron", "idiocy"
-}
+# Patterns that strongly indicate math / science content
+MATH_PATTERNS = [
+    r'\b\d+(\.\d+)?\s*[\+\-\*\/\^]\s*\d+',            # arithmetic: 2 + 3, 5 * x
+    r'[a-zA-Z]\s*[\+\-\*\/\^=<>]\s*[a-zA-Z0-9]',      # variable expressions: x = y, n + 1
+    r'\b(O|Θ|Ω)\s*\(\s*\w[\w\s\^]*\)',                 # Big-O: O(n log n)
+    r'\b\d+\s*(ms|ns|kb|mb|gb|hz|khz|mhz|ghz|rpm|nm|μm|mm|cm|km)\b',  # units
+    r'\b(sin|cos|tan|log|ln|sqrt|exp|lim|sum|prod|∑|∏|∫|∂|∇|≈|≡|≤|≥)\b',  # math ops
+    r'\b\d+(\.\d+)?\s*%',                              # percentage
+    r'\b(theorem|proof|lemma|corollary)\b',             # formal math
+    r'[A-Z][a-z]*\'s\s+(law|theorem|principle|equation|constant)',  # Newton's law etc.
+    r'\b\d+\s*(times?|iterations?|steps?|rounds?|epochs?|layers?)\b',  # quantified process
+    r'\b(because|therefore|thus|hence|since|given that|it follows)\b.*(math|science|physic|chem|bio|compute|formula|equation)',
+]
 
 
 class SentimentGate:
     def __init__(self):
-        self.analyzer = SentimentIntensityAnalyzer()
-
-    def _matches(self, text: str, phrases: set) -> bool:
-        """Check if any phrase matches as a whole word/phrase in text."""
-        for phrase in phrases:
-            # Use word boundaries for single words, exact phrase for multi-word
-            if ' ' in phrase:
-                if phrase in text:
-                    return True
-            else:
-                if re.search(r'\b' + re.escape(phrase) + r'\b', text):
-                    return True
-        return False
+        # Pre-compile all patterns for efficiency
+        self._patterns = [re.compile(p, re.IGNORECASE) for p in MATH_PATTERNS]
 
     def check_despair(self, user_text: str) -> tuple[bool, float]:
         """
-        Analyzes the user's text for submission/begging (allowed) vs aggression (blocked).
-
-        Logic:
-          - If the text contains AGGRESSION words → always reject, no matter how negative.
-          - If the text contains SUBMISSION words → accept (the developer is begging/humble).
-          - Otherwise, fall back to VADER compound score: score <= -0.4 triggers acceptance.
-
-        Returns (is_despair, compound_score).
+        Checks whether the user's explanation is mathematical or scientific.
+        Returns (passes_gate, confidence_score).
+        
+        - passes_gate = True  → user spoke science, commit is allowed.
+        - confidence_score    → 0.0–1.0 measure of how scientific the text is;
+                                used as the despair/score value on the leaderboard.
         """
         text_lower = user_text.lower()
+        words = set(re.findall(r"[a-z][a-z' ]*[a-z]|[a-z]", text_lower))
+        word_count = max(len(user_text.split()), 1)
 
-        # Check for aggression first — hard block (whole-word match)
-        if self._matches(text_lower, AGGRESSION_WORDS):
-            return False, 1.0
+        # --- Keyword hits ---
+        keyword_hits = sum(1 for kw in MATH_KEYWORDS if kw in text_lower)
 
-        # Check for submission/begging keywords — soft accept (whole-word match)
-        if self._matches(text_lower, SUBMISSION_WORDS):
-            return True, -0.9
+        # --- Pattern hits ---
+        pattern_hits = sum(1 for p in self._patterns if p.search(user_text))
 
-        # Fall back to VADER sentiment analysis
-        scores = self.analyzer.polarity_scores(user_text)
-        score = scores['compound']
+        # --- Score: weighted combination, normalized to 0-1 ---
+        # Each keyword hit = 0.15, each pattern hit = 0.25
+        # Longer, richer answers are rewarded (log scale dampener removed for simplicity)
+        raw = (keyword_hits * 0.15) + (pattern_hits * 0.25)
+        confidence = min(raw, 1.0)
 
-        # compound <= -0.4 is sufficiently negative/despairing to pass
-        return score <= -0.4, score
+        # Threshold: must score at least 0.15 (≥1 keyword OR ≥1 pattern)
+        passes = confidence >= 0.15
+
+        return passes, confidence
