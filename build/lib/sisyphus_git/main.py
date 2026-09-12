@@ -73,37 +73,9 @@ def main():
                 continue
                 
             # Check for despair
-            is_despair, score = gate.check_despair(user_input)
-            if is_despair:
+            if gate.check_despair(user_input):
                 saboteur.record_success()
                 console.print("\n[dim]Acceptance of futility confirmed. The boulder rolls back down the hill.[/dim]")
-                
-                # POST to leaderboard
-                try:
-                    import subprocess
-                    import requests
-                    
-                    # Get git username
-                    user_name_proc = subprocess.run(
-                        ["git", "config", "user.name"], 
-                        capture_output=True, text=True, check=True
-                    )
-                    username = user_name_proc.stdout.strip() or "Anonymous Sisyphus"
-                    
-                    # Despair score is the negative sentiment (higher = more despair)
-                    despair_score = abs(score)
-                    
-                    console.print(f"[dim]Uploading despair for {username}...[/dim]")
-                    
-                    requests.post("http://localhost:8000/score", json={
-                        "username": username,
-                        "despair_score": despair_score,
-                        "commit_message": user_input
-                    }, timeout=2)
-                    
-                except Exception as e:
-                    console.print(f"[dim]Failed to reach the Global Leaderboard of Despair. Your misery remains local. ({e})[/dim]")
-                
                 sys.exit(0)
                 
             # Failed to show despair

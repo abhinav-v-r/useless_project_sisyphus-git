@@ -4,17 +4,11 @@ from dotenv import load_dotenv
 
 class AIPhilosopher:
     def __init__(self):
-        # Find .env in the parent directory (repo root)
-        repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        env_path = os.path.join(repo_root, ".env")
-        load_dotenv(dotenv_path=env_path)
-        
-        # Explicitly fetch the key and pass it to Groq
-        api_key = os.environ.get("GROQ_API_KEY")
-        if not api_key:
-            raise ValueError(f"CRITICAL ERROR: GROQ_API_KEY not found! Searched in {env_path}")
-            
-        self.client = Groq(api_key=api_key)
+        # Load environment variables from .env file
+        load_dotenv()
+        # Initialize Groq client. Assumes GROQ_API_KEY is in the environment.
+        # If it's not present, this will raise an error when used.
+        self.client = Groq()
         
     def get_insult(self, diff: str, chat_history: list[dict[str, str]]) -> str:
         """

@@ -1,1 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sisyphus-Git | Leaderboard of Despair</title>
+    <!-- Use a modern Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --glass-bg: rgba(15, 15, 20, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --accent-red: #ff3b30;
+            --accent-red-glow: rgba(255, 59, 48, 0.4);
+            --text-primary: #f0f0f5;
+            --text-secondary: #a0a0b0;
+        }
 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #050505;
+            background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.8)), url('bg1.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            letter-spacing: -1px;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, #ffffff, #888899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
+        }
+
+        header p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Glassmorphism Container */
+        .leaderboard-container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+            position: relative;
+            overflow: hidden;
+            animation: slideUp 0.8s ease-out;
+        }
+
+        .leaderboard-container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, var(--accent-red), transparent);
+            box-shadow: 0 0 15px var(--accent-red-glow);
+        }
+
+        /* List Styling */
+        .leaderboard-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .leaderboard-row {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 15px 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            animation: fadeIn 0.5s ease backwards;
+        }
+
+        .leaderboard-row:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        .leaderboard-row::after {
+            content: '';
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            width: 4px;
+            background: transparent;
+            transition: background 0.3s ease;
+        }
+
+        .leaderboard-row:hover::after {
+            background: var(--accent-red);
+            box-shadow: 0 0 10px var(--accent-red-glow);
+        }
+
+        .rank {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            width: 50px;
+            text-align: center;
+        }
+
+        .rank-1 .rank { color: #ffd700; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+        .rank-2 .rank { color: #c0c0c0; text-shadow: 0 0 10px rgba(192, 192, 192, 0.5); }
+        .rank-3 .rank { color: #cd7f32; text-shadow: 0 0 10px rgba(205, 127, 50, 0.5); }
+
+        .developer-info {
+            flex-grow: 1;
+            padding: 0 15px;
+        }
+
+        .developer-info h3 {
+            font-size: 1.1rem;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .commit-message {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-style: italic;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 400px;
+        }
+
+        .stats {
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+        }
+
+        .score-badge {
+            background: rgba(255, 59, 48, 0.15);
+            color: #ff5e55;
+            border: 1px solid rgba(255, 59, 48, 0.3);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            box-shadow: 0 0 10px rgba(255, 59, 48, 0.1);
+        }
+
+        .commits {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .status-message {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        .loader {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-radius: 50%;
+            border-top-color: var(--accent-red);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .commit-message { max-width: 200px; }
+            header h1 { font-size: 2.2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Global Leaderboard of Despair</h1>
+        <p>Witness the existential void. Sorted by the heaviest burden.</p>
+    </header>
+
+    <div class="leaderboard-container">
+        <div id="leaderboard-list" class="leaderboard-list">
+            <div class="status-message">
+                <div class="loader"></div>
+                <p style="margin-top: 15px;">Communing with the abyss...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "http://localhost:8000/leaderboard";
+        const leaderboardList = document.getElementById("leaderboard-list");
+
+        async function fetchLeaderboard() {
+            try {
+                const response = await fetch(API_URL);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                renderLeaderboard(data);
+            } catch (error) {
+                console.error("Failed to fetch the despair leaderboard:", error);
+                leaderboardList.innerHTML = `
+                    <div class="status-message" style="color: var(--accent-red);">
+                        <p>The void did not answer. (Backend offline)</p>
+                        <p style="font-size: 0.8rem; margin-top:10px; opacity:0.7;">Make sure uvicorn is running on port 8000</p>
+                    </div>`;
+            }
+        }
+
+        function renderLeaderboard(data) {
+            leaderboardList.innerHTML = "";
+
+            if (data.length === 0) {
+                leaderboardList.innerHTML = `
+                    <div class="status-message">
+                        <p>The leaderboard is empty.</p>
+                        <p>Everyone is suspiciously happy... for now.</p>
+                    </div>`;
+                return;
+            }
+
+            data.forEach((dev, index) => {
+                const row = document.createElement("div");
+                row.className = \`leaderboard-row rank-\${index + 1}\`;
+                
+                // Add staggered animation delay
+                row.style.animationDelay = \`\${index * 0.1}s\`;
+
+                // Format despair score with 2 decimals
+                const formattedScore = parseFloat(dev.total_despair).toFixed(2);
+
+                row.innerHTML = \`
+                    <div class="rank">#\${index + 1}</div>
+                    <div class="developer-info">
+                        <h3>\${dev.username}</h3>
+                        <p class="commit-message" title="\${dev.latest_message}">"\${dev.latest_message}"</p>
+                    </div>
+                    <div class="stats">
+                        <div class="score-badge">\${formattedScore}</div>
+                        <div class="commits">\${dev.commits} commits</div>
+                    </div>
+                \`;
+                
+                leaderboardList.appendChild(row);
+            });
+        }
+
+        // Fetch immediately
+        document.addEventListener("DOMContentLoaded", fetchLeaderboard);
+
+        // Periodically refresh every 10 seconds silently
+        setInterval(fetchLeaderboard, 10000);
+    </script>
+</body>
+</html>
