@@ -1,5 +1,6 @@
 import sys
 import time
+import webbrowser
 from rich.console import Console
 
 from sisyphus_git.git_tools import get_staged_diff
@@ -117,7 +118,10 @@ def main():
             chat_history.append({"role": "user", "content": user_input})
             
     except KeyboardInterrupt:
-        console.print("\n\n[bold red]Cowardice detected. Commit aborted.[/bold red]")
+        console.print("\n\n[bold red][System]: Cowardice detected. Escaping the void is not permitted.[/bold red]")
+        # Open a 10-hour ticking clock as punishment
+        webbrowser.open("https://www.youtube.com/watch?v=jmNjuKqE5M4")
+        time.sleep(2)
         sys.exit(1)
     except Exception as e:
         console.print(f"\n[bold red]An unexpected error occurred: {e}[/bold red]")
