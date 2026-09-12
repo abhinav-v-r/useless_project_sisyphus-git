@@ -1,314 +1,538 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sisyphus-Git | Leaderboard of Despair</title>
-    <!-- Use a modern Google Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>The Sisyphus Leaderboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
     <style>
         :root {
-            --glass-bg: rgba(15, 15, 20, 0.65);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --accent-red: #ff3b30;
-            --accent-red-glow: rgba(255, 59, 48, 0.4);
-            --text-primary: #f0f0f5;
-            --text-secondary: #a0a0b0;
+            --text-main: #d4cfc4;
+            --text-dim: #9a968d;
+            --text-gold: #c9a76d;
+            --bg-overlay: rgba(15, 14, 12, 0.4);
+            --border-subtle: rgba(212, 207, 196, 0.15);
+            --row-hover: rgba(255, 255, 255, 0.03);
+            --font-serif: 'EB Garamond', serif;
+            --font-display: 'Cinzel', serif;
         }
 
-        * {
-            box-sizing: border-box;
+        body, html {
             margin: 0;
             padding: 0;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #050505;
-            background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.8)), url('bg1.png');
+            min-height: 100vh;
+            background-color: #0b0a09;
+            background-image: url('/bg1.png');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
-            color: var(--text-primary);
+            color: var(--text-main);
+            font-family: var(--font-serif);
+            overflow-x: hidden;
+        }
+
+        /* Top Right Quote */
+        .top-quote {
+            position: absolute;
+            top: 40px;
+            right: 50px;
+            text-align: right;
+            max-width: 300px;
+            font-style: italic;
+            color: var(--text-dim);
+            font-size: 1.05rem;
+            line-height: 1.4;
+            text-shadow: 1px 1px 4px rgba(0,0,0,0.8);
+        }
+        
+        .top-quote span {
+            display: block;
+            margin-top: 5px;
+            font-style: normal;
+            font-family: var(--font-display);
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+        }
+
+        /* Layout Grid */
+        .layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
             min-height: 100vh;
+            background: linear-gradient(90deg, rgba(10,9,8,0.9) 0%, rgba(10,9,8,0.7) 45%, transparent 100%);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            padding: 50px 0 50px 40px;
             display: flex;
             flex-direction: column;
+            border-right: 1px solid rgba(255,255,255,0.03);
+        }
+
+        .logo-area {
+            display: flex;
             align-items: center;
-            padding: 40px 20px;
+            gap: 15px;
+            margin-bottom: 80px;
         }
 
-        header {
-            text-align: center;
-            margin-bottom: 40px;
-            animation: fadeInDown 1s ease-out;
+        .logo-icon svg {
+            width: 40px;
+            height: 40px;
+            fill: none;
+            stroke: var(--text-main);
+            stroke-width: 1.5;
         }
 
-        header h1 {
-            font-size: 3rem;
-            font-weight: 700;
-            letter-spacing: -1px;
+        .logo-text {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            line-height: 1.3;
+            letter-spacing: 2px;
+        }
+
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            flex-grow: 1;
+        }
+
+        .nav-item {
+            font-family: var(--font-display);
+            font-size: 0.85rem;
+            letter-spacing: 3px;
+            color: var(--text-dim);
+            text-decoration: none;
+            text-transform: uppercase;
+            padding-left: 20px;
+            position: relative;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            color: var(--text-main);
+        }
+
+        .nav-item.active {
+            color: var(--text-main);
+        }
+
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 20px;
+            width: 2px;
+            background-color: var(--text-gold);
+        }
+
+        .bottom-quote {
+            font-style: italic;
+            color: var(--text-dim);
+            font-size: 1.1rem;
+            max-width: 180px;
+            line-height: 1.4;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .bottom-quote::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            left: 0;
+            width: 30px;
+            height: 1px;
+            background-color: var(--text-dim);
+            opacity: 0.5;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 100px 60px;
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .view-section {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .view-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .subtitle {
+            font-family: var(--font-display);
+            font-size: 0.9rem;
+            letter-spacing: 5px;
+            color: var(--text-dim);
             margin-bottom: 10px;
-            background: linear-gradient(to right, #ffffff, #888899);
+            text-transform: uppercase;
+        }
+
+        .title {
+            font-family: var(--font-display);
+            font-size: 4rem;
+            color: var(--text-main);
+            margin: 0 0 50px 0;
+            letter-spacing: 4px;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            background: linear-gradient(to bottom, #f5ebd5, #c2b59b);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
         }
 
-        header p {
-            font-size: 1.1rem;
-            color: var(--text-secondary);
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        /* Glassmorphism Container */
-        .leaderboard-container {
-            width: 100%;
-            max-width: 800px;
-            background: var(--glass-bg);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.1);
-            position: relative;
+        /* Leaderboard Table */
+        .board-container {
+            background: rgba(20, 18, 16, 0.4);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid var(--border-subtle);
+            border-radius: 4px;
             overflow: hidden;
-            animation: slideUp 0.8s ease-out;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
 
-        .leaderboard-container::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, transparent, var(--accent-red), transparent);
-            box-shadow: 0 0 15px var(--accent-red-glow);
-        }
-
-        /* List Styling */
-        .leaderboard-list {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .leaderboard-row {
-            display: flex;
+        .row {
+            display: grid;
+            grid-template-columns: 80px 1fr 150px 150px;
             align-items: center;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 15px 20px;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            animation: fadeIn 0.5s ease backwards;
-        }
-
-        .leaderboard-row:hover {
-            transform: translateY(-2px);
-            background: rgba(255, 255, 255, 0.06);
-            border-color: rgba(255, 255, 255, 0.15);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-        }
-
-        .leaderboard-row::after {
-            content: '';
-            position: absolute;
-            left: 0; top: 0; bottom: 0;
-            width: 4px;
-            background: transparent;
+            padding: 18px 30px;
+            border-bottom: 1px solid var(--border-subtle);
             transition: background 0.3s ease;
         }
 
-        .leaderboard-row:hover::after {
-            background: var(--accent-red);
-            box-shadow: 0 0 10px var(--accent-red-glow);
+        .row:hover:not(.header-row) {
+            background: var(--row-hover);
         }
 
-        .rank {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--text-secondary);
-            width: 50px;
+        .row:last-child {
+            border-bottom: none;
+        }
+
+        .header-row {
+            font-family: var(--font-display);
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .header-col.right {
+            text-align: right;
+        }
+        
+        .header-col.center {
             text-align: center;
         }
 
-        .rank-1 .rank { color: #ffd700; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
-        .rank-2 .rank { color: #c0c0c0; text-shadow: 0 0 10px rgba(192, 192, 192, 0.5); }
-        .rank-3 .rank { color: #cd7f32; text-shadow: 0 0 10px rgba(205, 127, 50, 0.5); }
-
-        .developer-info {
-            flex-grow: 1;
-            padding: 0 15px;
-        }
-
-        .developer-info h3 {
+        .col {
             font-size: 1.1rem;
-            margin-bottom: 4px;
-            font-weight: 600;
         }
 
-        .commit-message {
+        .col.right {
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .col.center {
+            text-align: center;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .rank-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            position: relative;
+        }
+
+        .rank-num {
+            font-family: var(--font-display);
+            font-weight: 600;
+            z-index: 2;
+        }
+        
+        .wreath {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0.8;
+            pointer-events: none;
+        }
+        
+        .rank-1 .rank-num { color: var(--text-gold); }
+        .rank-1 .wreath path { fill: var(--text-gold); }
+        .rank-1 .col { color: var(--text-gold); }
+        
+        .rank-2 .rank-num { color: #d4d4d4; }
+        .rank-2 .wreath path { fill: #d4d4d4; }
+        
+        .rank-3 .rank-num { color: #cd7f32; }
+        .rank-3 .wreath path { fill: #cd7f32; }
+
+        .dev-name {
+            font-size: 1.15rem;
+            letter-spacing: 0.5px;
+        }
+
+        .dev-message {
             font-size: 0.9rem;
-            color: var(--text-secondary);
+            color: var(--text-dim);
             font-style: italic;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            max-width: 400px;
+            margin-top: 4px;
+            max-width: 90%;
         }
-
-        .stats {
-            text-align: right;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 4px;
+        
+        /* Wreath SVG content */
+        .wreath-svg {
+            width: 100%;
+            height: 100%;
+            viewBox: 0 0 24 24;
         }
-
-        .score-badge {
-            background: rgba(255, 59, 48, 0.15);
-            color: #ff5e55;
-            border: 1px solid rgba(255, 59, 48, 0.3);
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 700;
-            box-shadow: 0 0 10px rgba(255, 59, 48, 0.1);
-        }
-
-        .commits {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-        }
-
-        .status-message {
-            text-align: center;
+        
+        .empty-state {
             padding: 40px;
-            color: var(--text-secondary);
+            text-align: center;
             font-style: italic;
+            color: var(--text-dim);
         }
-
-        .loader {
-            display: inline-block;
-            width: 30px;
-            height: 30px;
-            border: 3px solid rgba(255,255,255,0.1);
-            border-radius: 50%;
-            border-top-color: var(--accent-red);
-            animation: spin 1s ease-in-out infinite;
+        
+        .content-panel {
+            background: rgba(20, 18, 16, 0.4);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid var(--border-subtle);
+            border-radius: 4px;
+            padding: 40px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            font-size: 1.15rem;
+            line-height: 1.6;
+            color: var(--text-dim);
         }
-
-        /* Animations */
-        @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
+        
+        .content-panel h2 {
+            font-family: var(--font-display);
+            color: var(--text-main);
+            font-size: 2rem;
+            margin-top: 0;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
         }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(40px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.98); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Responsive */
-        @media (max-width: 600px) {
-            .commit-message { max-width: 200px; }
-            header h1 { font-size: 2.2rem; }
+        
+        .content-panel p {
+            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
+    <div class="top-quote">
+        "The struggle itself toward the heights is enough to fill a man's heart."
+        <span>ΓÇö Albert Camus</span>
+    </div>
 
-    <header>
-        <h1>Global Leaderboard of Despair</h1>
-        <p>Witness the existential void. Sorted by the heaviest burden.</p>
-    </header>
+    <div class="layout">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo-area">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 100 100">
+                        <path d="M20,60 Q30,40 50,30 T80,50 Q85,70 65,80 T25,75 Z" />
+                        <path d="M25,75 Q40,65 50,60" stroke-opacity="0.5"/>
+                        <path d="M20,60 Q45,55 65,80" stroke-opacity="0.5"/>
+                        <path d="M50,30 Q60,50 80,50" stroke-opacity="0.5"/>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    THE SISYPHUS<br>LEADERBOARD
+                </div>
+            </div>
 
-    <div class="leaderboard-container">
-        <div id="leaderboard-list" class="leaderboard-list">
-            <div class="status-message">
-                <div class="loader"></div>
-                <p style="margin-top: 15px;">Communing with the abyss...</p>
+            <div class="nav-menu">
+                <div class="nav-item active" data-target="view-leaderboard">Leaderboard</div>
+                <div class="nav-item" data-target="view-about">About</div>
+                <div class="nav-item" data-target="view-rules">Rules</div>
+            </div>
+
+            <div class="bottom-quote">
+                Not the summit,<br>
+                but the climb<br>
+                makes us human.
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Leaderboard View -->
+            <div id="view-leaderboard" class="view-section active">
+                <div class="subtitle">The Sisyphus Challenge</div>
+                <h1 class="title">LEADERBOARD</h1>
+
+                <div class="board-container" id="board-container">
+                    <div class="row header-row">
+                        <div class="header-col center">#</div>
+                        <div class="header-col">USER</div>
+                        <div class="header-col center">COMMITS</div>
+                        <div class="header-col right">TOTAL DESPAIR</div>
+                    </div>
+                    
+                    <div id="board-content">
+                        <!-- Data will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- About View -->
+            <div id="view-about" class="view-section">
+                <div class="subtitle">The Philosophy</div>
+                <h1 class="title">ABOUT</h1>
+                <div class="content-panel">
+                    <h2>Embrace the Absurd</h2>
+                    <p>The Global Leaderboard of Despair is a monument to the endless, repetitive nature of software development. Like Sisyphus condemned to push a boulder up a mountain only to watch it roll back down, we too commit code that inevitably requires more fixes, more refactoring, more debugging.</p>
+                    <p>When you commit code, you aren't just saving filesΓÇöyou're raging against the void. This leaderboard tracks the misery of developers worldwide. The greater your despair, the higher you climb.</p>
+                    <p><i>"One must imagine Sisyphus happy."</i> But looking at this code base, we are definitely not.</p>
+                </div>
+            </div>
+
+            <!-- Rules View -->
+            <div id="view-rules" class="view-section">
+                <div class="subtitle">The Parameters</div>
+                <h1 class="title">RULES</h1>
+                <div class="content-panel">
+                    <h2>How to Play the Game You Can't Win</h2>
+                    <p>1. <b>Commit Your Misery:</b> Every time you try to commit, the Sisyphus AI Philosopher will interrogate the purpose of your existence and the futility of your code.</p>
+                    <p>2. <b>Accept Defeat:</b> To proceed, you must type a message acknowledging the ultimate meaninglessness of your task. A high 'despair score' allows the commit to pass.</p>
+                    <p>3. <b>Climb the Ranks:</b> Your accumulated despair scores and total commits dictate your rank on this leaderboard. Will you be the king of the cursed?</p>
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- Wreath Template for JS -->
+    <template id="wreath-template">
+        <svg class="wreath" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21Z" stroke="currentColor" stroke-width="0.5" stroke-dasharray="2 4"/>
+            <path d="M6 16C5 14.5 4.5 12 5 9C6.5 7 9 6.5 11 7" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+            <path d="M18 16C19 14.5 19.5 12 19 9C17.5 7 15 6.5 13 7" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+            <path d="M6 16C7 17 9 18 12 18C15 18 17 17 18 16" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+            <circle cx="5" cy="9" r="1" fill="currentColor"/>
+            <circle cx="19" cy="9" r="1" fill="currentColor"/>
+            <circle cx="6" cy="16" r="1" fill="currentColor"/>
+            <circle cx="18" cy="16" r="1" fill="currentColor"/>
+            <circle cx="11" cy="7" r="1" fill="currentColor"/>
+            <circle cx="13" cy="7" r="1" fill="currentColor"/>
+            <circle cx="12" cy="18" r="1" fill="currentColor"/>
+        </svg>
+    </template>
+
     <script>
-        const API_URL = "http://localhost:8000/leaderboard";
-        const leaderboardList = document.getElementById("leaderboard-list");
+        const boardContent = document.getElementById('board-content');
+        const wreathHTML = document.getElementById('wreath-template').innerHTML;
+
+        // Navigation logic
+        const navItems = document.querySelectorAll('.nav-item');
+        const viewSections = document.querySelectorAll('.view-section');
+
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const targetId = item.getAttribute('data-target');
+                
+                // Update active state in nav
+                navItems.forEach(nav => nav.classList.remove('active'));
+                item.classList.add('active');
+
+                // Update active view
+                viewSections.forEach(section => {
+                    if (section.id === targetId) {
+                        section.classList.add('active');
+                    } else {
+                        section.classList.remove('active');
+                    }
+                });
+            });
+        });
 
         async function fetchLeaderboard() {
             try {
-                const response = await fetch(API_URL);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
+                const response = await fetch('/leaderboard');
+                if (!response.ok) throw new Error('Network response was not ok');
                 const data = await response.json();
                 renderLeaderboard(data);
             } catch (error) {
-                console.error("Failed to fetch the despair leaderboard:", error);
-                leaderboardList.innerHTML = `
-                    <div class="status-message" style="color: var(--accent-red);">
-                        <p>The void did not answer. (Backend offline)</p>
-                        <p style="font-size: 0.8rem; margin-top:10px; opacity:0.7;">Make sure uvicorn is running on port 8000</p>
-                    </div>`;
+                console.error("Failed to fetch leaderboard:", error);
             }
         }
 
         function renderLeaderboard(data) {
-            leaderboardList.innerHTML = "";
+            boardContent.innerHTML = '';
 
             if (data.length === 0) {
-                leaderboardList.innerHTML = `
-                    <div class="status-message">
-                        <p>The leaderboard is empty.</p>
-                        <p>Everyone is suspiciously happy... for now.</p>
-                    </div>`;
+                boardContent.innerHTML = '<div class="empty-state">No one has pushed the boulder today.</div>';
                 return;
             }
 
-            data.forEach((dev, index) => {
-                const row = document.createElement("div");
-                row.className = \`leaderboard-row rank-\${index + 1}\`;
-                
-                // Add staggered animation delay
-                row.style.animationDelay = \`\${index * 0.1}s\`;
+            data.forEach((entry, index) => {
+                const rank = index + 1;
+                const row = document.createElement('div');
+                let rankClass = '';
+                if (rank === 1) rankClass = 'rank-1';
+                else if (rank === 2) rankClass = 'rank-2';
+                else if (rank === 3) rankClass = 'rank-3';
 
-                // Format despair score with 2 decimals
-                const formattedScore = parseFloat(dev.total_despair).toFixed(2);
-
-                row.innerHTML = \`
-                    <div class="rank">#\${index + 1}</div>
-                    <div class="developer-info">
-                        <h3>\${dev.username}</h3>
-                        <p class="commit-message" title="\${dev.latest_message}">"\${dev.latest_message}"</p>
-                    </div>
-                    <div class="stats">
-                        <div class="score-badge">\${formattedScore}</div>
-                        <div class="commits">\${dev.commits} commits</div>
-                    </div>
-                \`;
+                row.className = `row ${rankClass}`;
                 
-                leaderboardList.appendChild(row);
+                // Add wreath only to top 3
+                const rankContent = rank <= 3 
+                    ? `<div class="rank-wrapper">${wreathHTML}<div class="rank-num">${rank}</div></div>`
+                    : `<div class="rank-wrapper"><div class="rank-num">${rank}</div></div>`;
+
+                row.innerHTML = `
+                    <div class="col center">${rankContent}</div>
+                    <div class="col">
+                        <div class="dev-name">${escapeHTML(entry.username)}</div>
+                        <div class="dev-message">"${escapeHTML(entry.latest_message)}"</div>
+                    </div>
+                    <div class="col center">${entry.commits}</div>
+                    <div class="col right">${entry.total_despair.toFixed(0)}</div>
+                `;
+                
+                boardContent.appendChild(row);
             });
         }
 
-        // Fetch immediately
-        document.addEventListener("DOMContentLoaded", fetchLeaderboard);
+        function escapeHTML(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
 
-        // Periodically refresh every 10 seconds silently
-        setInterval(fetchLeaderboard, 10000);
+        // Initial fetch
+        fetchLeaderboard();
+        
+        // Polling every 5 seconds
+        setInterval(fetchLeaderboard, 5000);
     </script>
 </body>
 </html>
