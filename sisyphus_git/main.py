@@ -94,7 +94,7 @@ def main():
                     console.print(f"[dim]Uploading despair for {username}...[/dim]")
                     
                     # Read backend URL from env (set SISYPHUS_BACKEND_URL in .env for production)
-                    backend_url = os.environ.get("SISYPHUS_BACKEND_URL", "http://localhost:8080")
+                    backend_url = os.environ.get("SISYPHUS_BACKEND_URL", "http://localhost:8000")
                     requests.post(f"{backend_url}/score", json={
                         "username": username,
                         "despair_score": score,

@@ -10,7 +10,7 @@ def main():
     console.print("\n[bold red]Connecting to the Global Leaderboard of Despair...[/bold red]")
     
     try:
-        response = requests.get("http://localhost:8080/leaderboard", timeout=5)
+        response = requests.get("http://localhost:8000/leaderboard", timeout=5)
         response.raise_for_status()
         data = response.json()
     except Exception as e:
