@@ -27,10 +27,10 @@ def main():
         show_header=True, 
         header_style="bold red"
     )
-    table.add_column("Rank", justify="right", style="cyan", no_wrap=True)
+    table.add_column("Rank", justify="center", style="cyan", no_wrap=True)
     table.add_column("Developer", style="magenta")
     table.add_column("Despair Score", justify="right", style="green")
-    table.add_column("Commits", justify="right", style="blue")
+    table.add_column("Commits", justify="center", style="blue")
     table.add_column("Last Words (Commit Message)", style="dim white")
     
     for idx, entry in enumerate(data, start=1):

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -220,7 +220,7 @@
 
         .row {
             display: grid;
-            grid-template-columns: 80px 1fr 150px 150px;
+            grid-template-columns: 80px 1fr 140px 160px;
             align-items: center;
             padding: 18px 30px;
             border-bottom: 1px solid var(--border-subtle);
@@ -254,6 +254,7 @@
 
         .col {
             font-size: 1.1rem;
+            min-width: 0;
         }
 
         .col.right {
@@ -264,6 +265,9 @@
         .col.center {
             text-align: center;
             font-variant-numeric: tabular-nums;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .rank-wrapper {
@@ -273,12 +277,14 @@
             width: 40px;
             height: 40px;
             position: relative;
+            margin: 0 auto;
         }
 
         .rank-num {
             font-family: var(--font-display);
-            font-weight: 600;
+            font-weight: 700;
             z-index: 2;
+            font-size: 1rem;
         }
 
         .wreath {
@@ -287,12 +293,12 @@
             height: 100%;
             top: 0;
             left: 0;
-            opacity: 0.8;
+            opacity: 0.85;
             pointer-events: none;
         }
 
         .rank-1 .rank-num {
-            color: var(--text-gold);
+            color: #1a140a;
         }
 
         .rank-1 .wreath path {
@@ -304,24 +310,40 @@
         }
 
         .rank-2 .rank-num {
-            color: #d4d4d4;
+            color: #1a1a1a;
         }
 
         .rank-2 .wreath path {
             fill: #d4d4d4;
         }
 
+        .rank-2 .col {
+            color: #d4d4d4;
+        }
+
         .rank-3 .rank-num {
-            color: #cd7f32;
+            color: #1a1208;
         }
 
         .rank-3 .wreath path {
             fill: #cd7f32;
         }
 
+        .rank-3 .col {
+            color: #cd7f32;
+        }
+
+        .rank-other .rank-num {
+            color: var(--text-dim);
+            font-weight: 600;
+        }
+
         .dev-name {
             font-size: 1.15rem;
             letter-spacing: 0.5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .dev-message {
@@ -332,7 +354,7 @@
             overflow: hidden;
             text-overflow: ellipsis;
             margin-top: 4px;
-            max-width: 90%;
+            max-width: 100%;
         }
 
         /* Wreath SVG content */
@@ -380,7 +402,7 @@
 <body>
     <div class="top-quote">
         "The struggle itself toward the heights is enough to fill a man's heart."
-        <span>ΓÇö Albert Camus</span>
+        <span>&mdash; Albert Camus</span>
     </div>
 
     <div class="layout">
@@ -444,7 +466,7 @@
                         development. Like Sisyphus condemned to push a boulder up a mountain only to watch it roll back
                         down, we too commit code that inevitably requires more fixes, more refactoring, more debugging.
                     </p>
-                    <p>When you commit code, you aren't just saving filesΓÇöyou're raging against the void. This
+                    <p>When you commit code, you aren't just saving files&mdash;you're raging against the void. This
                         leaderboard tracks the misery of developers worldwide. The greater your despair, the higher you
                         climb.</p>
                     <p><i>"One must imagine Sisyphus happy."</i> But looking at this code base, we are definitely not.
@@ -540,7 +562,7 @@
             data.forEach((entry, index) => {
                 const rank = index + 1;
                 const row = document.createElement('div');
-                let rankClass = '';
+                let rankClass = 'rank-other';
                 if (rank === 1) rankClass = 'rank-1';
                 else if (rank === 2) rankClass = 'rank-2';
                 else if (rank === 3) rankClass = 'rank-3';
@@ -552,11 +574,18 @@
                     ? `<div class="rank-wrapper">${wreathHTML}<div class="rank-num">${rank}</div></div>`
                     : `<div class="rank-wrapper"><div class="rank-num">${rank}</div></div>`;
 
+                const cleanMessage = entry.latest_message 
+                    ? entry.latest_message.replace(/[\ufffd\u0080-\u009f]/g, "'") 
+                    : "";
+                const messageHTML = cleanMessage 
+                    ? `<div class="dev-message" title="${escapeHTML(cleanMessage)}">"${escapeHTML(cleanMessage)}"</div>` 
+                    : "";
+
                 row.innerHTML = `
                     <div class="col center">${rankContent}</div>
                     <div class="col">
                         <div class="dev-name">${escapeHTML(entry.username)}</div>
-                        <div class="dev-message">"${escapeHTML(entry.latest_message)}"</div>
+                        ${messageHTML}
                     </div>
                     <div class="col center">${entry.commits}</div>
                     <div class="col right">${entry.total_despair.toFixed(0)}</div>
