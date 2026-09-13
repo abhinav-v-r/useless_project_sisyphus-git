@@ -2,7 +2,7 @@ import json
 import os
 import subprocess
 import sys
-from typing import Tuple
+from typing import Tuple, Optional
 
 class Saboteur:
     def __init__(self):
@@ -51,7 +51,7 @@ class Saboteur:
         self.consecutive_failures = 0
         self._save_state()
 
-    def record_failure(self) -> str | None:
+    def record_failure(self) -> Optional[str]:
         """
         Increments failure count. If failures >= 3, executes punishment,
         increments tier, resets failures, and returns the punishment message.
