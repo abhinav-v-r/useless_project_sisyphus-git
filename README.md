@@ -87,7 +87,7 @@ git commit -m "Trying to fix the void"
 
 # 2. View the Global Leaderboard of Despair (Web UI)
 cd backend
-uvicorn app:app --port 8000
+uvicorn main:app --port 8000
 
 # 3. View the Terminal Leaderboard
 sisyphus-leaderboard
