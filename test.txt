@@ -1,5 +1,13 @@
-hi
-abhinav
-arjun k
-hello
-hai arjun 
+def two_sum_linear(nums, target):
+    seen = {} # Maps value -> its index
+    
+    # Single loop runs n times
+    for i, num in enumerate(nums):
+        complement = target - num
+        
+        # Hash map lookups take O(1) time on average
+        if complement in seen:
+            return [seen[complement], i] # Pair found
+            
+        seen[num] = i
+    return []
