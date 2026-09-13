@@ -96,6 +96,10 @@ sisyphus-leaderboard
 ### Project Documentation
 For Software:
 
+# Demo Video
+<video src="recording.mp4" controls="controls" style="max-width: 100%;">
+</video>
+
 # Screenshots
 ![Terminal Interrogation](screenshots/t1.jpeg)
 *The terminal interrogating the developer about the meaninglessness of their code.*
