@@ -97,8 +97,8 @@ sisyphus-leaderboard
 For Software:
 
 # Demo Video
-<video src="recording.mp4" controls="controls" style="max-width: 100%;">
-</video>
+
+[▶️ Watch Demo Video](https://github.com/abhinav-v-r/useless_project_sisyphus-git/raw/main/recording.mp4)
 
 # Screenshots
 ![Terminal Interrogation](screenshots/t1.jpeg)
